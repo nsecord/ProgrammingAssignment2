@@ -3,9 +3,9 @@
 ## 
 ## It is used in conjunction with cacheSolve() which
 ## solves for the inverse of the matrix and uses the
-## stores the result int the cache. 
+## setInverse() function to store the result in the cache. 
 ## 
-## The function uses lexical scoping to assign and
+## makeCacheMatrix uses lexical scoping to assign and
 ## search for the cached variables in the parent 
 ## environment of where the functions are called.
 ## 
@@ -22,7 +22,7 @@
 ##        [,1] [,2]
 ##   [1,]    1   -1
 ##   [2,]    2   -1
-##   > inv <- cacheSolve(x)
+##   > inv <- cacheSolve(x)                  
 ##   getting cached data
 ##   > inv
 ##        [,1] [,2]
@@ -31,14 +31,22 @@
 ##
 
 makeCacheMatrix <- function(x = matrix()) {
+	    ## Initiate the matrix inverse minv to NULL
 	    minv <- NULL
+	    ## Setter function for setting the stored matrix x
         set <- function(y) {
             x <<- y
             minv <<- NULL
         }
+        ## Getter function for retrieving the stored matrix x
         get <- function() x
+        ## Setter function for the matrix inverse of x
         setInverse <- function(inverse) minv <<- inverse
+        ## Getter function for the matrix inverse of x
         getInverse <- function() minv
+        ## Create a list of available functions so that when the user
+        ## performs x$elem they get the result of the appropriate
+        ## setter or getter function defined by elem.
 	    list(set = set, get = get,
 	         setInverse = setInverse,
 	         getInverse = getInverse)
@@ -65,14 +73,16 @@ cacheSolve <- function(x, ...) {
         ## calculated.
         inv <- x$getInverse()
         if(!is.null(inv)) {
-        	## If the inverse is not null, return the
-        	## result retrieved from the cache.
+        	## If the result stored in the cache is not null, 
+        	## print a message to the console saying we are 
+        	## using the cached data and return the retrieved
+        	## result.
             message("getting cached data")
             return(inv)
         }
-        ## Otherwise, it solves for the inverse using 
-        ## the solve() function and sets the inverse
-        ## in the cache using the setInverse() function.
+        ## Otherwise, solve for the inverse using the solve() 
+        ## function and set the value in the cache using the 
+        ## setInverse() function.
         data <- x$get()
         inv <- solve(data, ...)
         x$setInverse(inv)
